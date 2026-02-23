@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WriteLift AI — Student Writing Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D1B2A;--navy-mid:#1A2F45;--navy-light:#2A4A6B;
+  --cream:#F5F0E8;--cream-dark:#EDE6D6;
+  --amber:#F4A536;--amber-light:#F7C06A;--amber-dark:#D4831A;
+  --emerald:#2ECC8A;--rose:#E85D75;--sky:#5BA4CF;
+  --white:#FDFCFA;--border:rgba(13,27,42,0.1);
+  --shadow-md:0 8px 32px rgba(13,27,42,0.12);
+  --shadow-lg:0 24px 64px rgba(13,27,42,0.18);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);overflow-x:hidden;line-height:1.6}
+h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.15}
+.mono{font-family:'DM Mono',monospace}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;animation:fadeIn 0.35s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TOP NAV ── */
+.topnav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,27,42,0.97);backdrop-filter:blur(20px);
+  padding:0 5%;height:66px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nav-brand{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--cream);display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-mark{width:32px;height:32px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;color:var(--navy)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-user{color:rgba(245,240,232,0.6);font-size:0.875rem}
+.nav-user span{color:var(--amber);font-weight:600}
+.btn-nav{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:var(--cream);padding:0.4rem 1rem;border-radius:6px;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.btn-nav:hover{background:rgba(255,255,255,0.12)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:0.75rem 1.6rem;border-radius:8px;font-weight:600;font-size:0.95rem;cursor:pointer;border:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;text-decoration:none}
+.btn-primary{background:var(--amber);color:var(--navy);box-shadow:0 4px 16px rgba(244,165,54,0.35)}
+.btn-primary:hover{background:var(--amber-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,165,54,0.45)}
+.btn-secondary{background:rgba(13,27,42,0.08);color:var(--navy);border:1px solid var(--border)}
+.btn-secondary:hover{background:rgba(13,27,42,0.14)}
+.btn-dark{background:var(--navy);color:var(--cream)}
+.btn-dark:hover{background:var(--navy-mid);transform:translateY(-2px)}
+.btn-sm{padding:0.5rem 1rem;font-size:0.85rem}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+/* ── LANDING ── */
+#screen-landing{background:var(--navy);display:flex;flex-direction:column}
+.landing-hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:100px 5% 60px;text-align:center;position:relative;overflow:hidden;
+}
+.landing-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(244,165,54,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(244,165,54,0.04) 1px,transparent 1px);background-size:60px 60px}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.orb1{width:500px;height:500px;background:rgba(244,165,54,0.1);top:-150px;right:-100px}
+.orb2{width:400px;height:400px;background:rgba(91,164,207,0.08);bottom:-100px;left:-100px}
+.landing-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(244,165,54,0.12);border:1px solid rgba(244,165,54,0.25);color:var(--amber-light);padding:0.4rem 1rem;border-radius:100px;font-size:0.78rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:2rem;position:relative;z-index:1;animation:slideUp 0.5s ease}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.landing-title{font-size:clamp(2.8rem,6vw,5.5rem);font-weight:900;color:var(--white);position:relative;z-index:1;animation:slideUp 0.5s ease 0.1s both;max-width:800px}
+.landing-title em{font-style:italic;color:var(--amber);display:block}
+.landing-sub{font-size:1.1rem;color:rgba(245,240,232,0.6);max-width:520px;margin-top:1.2rem;font-weight:300;line-height:1.7;position:relative;z-index:1;animation:slideUp 0.5s ease 0.2s both}
+.landing-actions{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;animation:slideUp 0.5s ease 0.3s both}
+.landing-btn-student{background:var(--amber);color:var(--navy);padding:1rem 2.2rem;border-radius:10px;font-weight:700;font-size:1.05rem;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.25s;box-shadow:0 4px 20px rgba(244,165,54,0.4);display:flex;align-items:center;gap:10px}
+.landing-btn-student:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(244,165,54,0.5)}
+.landing-btn-teacher{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:var(--cream);padding:1rem 2.2rem;border-radius:10px;font-weight:500;font-size:1.05rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.25s;display:flex;align-items:center;gap:10px}
+.landing-btn-teacher:hover{background:rgba(255,255,255,0.12);transform:translateY(-3px)}
+.landing-features{display:flex;gap:2.5rem;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,0.07);position:relative;z-index:1;flex-wrap:wrap;justify-content:center;animation:slideUp 0.5s ease 0.45s both}
+.lf-item{text-align:center}
+.lf-icon{font-size:1.5rem;margin-bottom:6px}
+.lf-label{font-size:0.78rem;color:rgba(245,240,232,0.45);text-transform:uppercase;letter-spacing:0.08em;font-weight:500}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SETUP MODAL / FORM ── */
+.modal-bg{position:fixed;inset:0;background:rgba(7,17,26,0.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease}
+.modal-bg.hidden{display:none}
+.modal{background:var(--white);border-radius:20px;padding:40px;max-width:520px;width:100%;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:rgba(13,27,42,0.4);font-size:1.2rem;transition:color 0.2s;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.modal-close:hover{color:var(--navy);background:var(--cream)}
+.modal-title{font-size:1.6rem;margin-bottom:6px}
+.modal-sub{color:#6B8299;font-size:0.9rem;margin-bottom:28px}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:0.8rem;font-weight:600;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.form-label span{color:var(--rose);margin-left:2px}
+.form-input,.form-select,.form-textarea{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--navy);background:var(--white);transition:border-color 0.2s,box-shadow 0.2s;outline:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(244,165,54,0.12)}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.6}
+.form-hint{font-size:0.78rem;color:#6B8299;margin-top:5px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.api-note{background:rgba(244,165,54,0.08);border:1px solid rgba(244,165,54,0.2);border-radius:8px;padding:12px 14px;font-size:0.82rem;color:#6B8299;margin-top:8px;line-height:1.5}
+.api-note a{color:var(--amber-dark);text-decoration:none;font-weight:600}
+.api-note a:hover{text-decoration:underline}
+
+/* ── STUDENT DASHBOARD ── */
+#screen-student{background:var(--cream)}
+.student-layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 66px)}
+.sidebar{background:var(--navy);padding:28px 20px;border-right:1px solid rgba(255,255,255,0.05)}
+.sidebar-greeting{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--white);margin-bottom:2px}
+.sidebar-class{font-size:0.78rem;color:rgba(245,240,232,0.4)}
+.sidebar-level{background:rgba(244,165,54,0.15);border:1px solid rgba(244,165,54,0.25);border-radius:8px;padding:12px;margin-bottom:24px;text-align:center}
+.sl-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(245,240,232,0.4);margin-bottom:4px}
+.sl-value{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--amber)}
+.sl-sub{font-size:0.72rem;color:rgba(245,240,232,0.5)}
+.sidebar-nav{list-style:none}
+.snav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:rgba(245,240,232,0.5);font-size:0.875rem;cursor:pointer;transition:all 0.2s;margin-bottom:2px}
+.snav-item:hover{background:rgba(255,255,255,0.06);color:rgba(245,240,232,0.85)}
+.snav-item.active{background:rgba(244,165,54,0.15);color:var(--amber)}
+.snav-icon{font-size:1rem;width:20px;text-align:center}
+
+.student-main{padding:32px 40px;overflow-y:auto}
+.page-title{font-size:1.8rem;margin-bottom:4px}
+.page-sub{color:#6B8299;font-size:0.9rem;margin-bottom:28px}
+
+/* ── STAT CARDS ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--white);border-radius:14px;padding:20px;border:1px solid var(--border)}
+.sc-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:#6B8299;margin-bottom:8px}
+.sc-value{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--navy)}
+.sc-sub{font-size:0.78rem;color:var(--emerald);margin-top:3px}
+.sc-sub.warn{color:var(--amber-dark)}
+
+/* ── SKILLS PANEL ── */
+.panel{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:24px;margin-bottom:20px}
+.panel-title{font-size:1rem;font-weight:700;font-family:'DM Sans',sans-serif;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.skill-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.skill-name{font-size:0.82rem;color:#6B8299;width:100px;flex-shrink:0}
+.skill-track{flex:1;height:8px;background:var(--cream-dark);border-radius:100px;overflow:hidden}
+.skill-fill{height:100%;border-radius:100px;transition:width 1s cubic-bezier(0.23,1,0.32,1)}
+.skill-score{font-family:'DM Mono',monospace;font-size:0.78rem;color:#6B8299;width:30px;text-align:right}
+.skill-level-badge{font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:100px;width:36px;text-align:center;flex-shrink:0}
+.lv1{background:rgba(232,93,117,0.12);color:var(--rose)}
+.lv2{background:rgba(244,165,54,0.12);color:var(--amber-dark)}
+.lv3{background:rgba(91,164,207,0.15);color:var(--sky)}
+.lv4{background:rgba(46,204,138,0.12);color:#1A9E6A}
+.lv5{background:rgba(46,204,138,0.2);color:#0D7A51}
+
+/* ── WRITE PAGE ── */
+.assignment-card{background:var(--navy);border-radius:16px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.assignment-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--amber)}
+.ac-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:rgba(245,240,232,0.4);margin-bottom:8px}
+.ac-title{font-size:1.3rem;color:var(--white);margin-bottom:10px}
+.ac-prompt{font-size:0.9rem;color:rgba(245,240,232,0.65);line-height:1.65}
+.ac-meta{display:flex;gap:16px;margin-top:14px;font-size:0.78rem;color:rgba(245,240,232,0.35)}
+.writing-area{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:24px;margin-bottom:16px}
+.writing-area-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.writing-area-title{font-size:0.85rem;font-weight:600;color:#6B8299;text-transform:uppercase;letter-spacing:0.06em}
+.word-count{font-family:'DM Mono',monospace;font-size:0.82rem;color:#6B8299}
+.word-count.good{color:var(--emerald)}
+.word-count.warn{color:var(--amber-dark)}
+#essay-input{width:100%;min-height:280px;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:1rem;line-height:1.75;color:var(--navy);resize:none;background:transparent}
+#essay-input::placeholder{color:rgba(13,27,42,0.25)}
+.submit-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.submit-hint{font-size:0.82rem;color:#6B8299}
+
+/* ── ASSESSMENT RESULTS ── */
+.assessment-panel{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+.ap-header{background:var(--navy);padding:24px 28px;display:flex;align-items:center;justify-content:space-between}
+.ap-title{font-size:1.1rem;color:var(--white);font-family:'Playfair Display',serif}
+.ap-score{text-align:right}
+.ap-score-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--amber);line-height:1}
+.ap-score-label{font-size:0.72rem;color:rgba(245,240,232,0.4);text-transform:uppercase;letter-spacing:0.07em}
+.ap-body{padding:24px 28px}
+.ap-summary{background:rgba(244,165,54,0.06);border:1px solid rgba(244,165,54,0.15);border-radius:10px;padding:14px 16px;font-size:0.9rem;line-height:1.65;color:#3D5166;margin-bottom:20px}
+.feedback-section-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:#6B8299;margin-bottom:10px;font-weight:700}
+.feedback-item{display:flex;gap:12px;padding:12px 14px;border-radius:10px;margin-bottom:8px;font-size:0.875rem;line-height:1.6}
+.fi-strength{background:rgba(46,204,138,0.07);border:1px solid rgba(46,204,138,0.15)}
+.fi-improve{background:rgba(244,165,54,0.07);border:1px solid rgba(244,165,54,0.15)}
+.fi-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.fi-body{color:#3D5166}
+.fi-body strong{color:var(--navy)}
+.fi-body em{font-style:normal;color:var(--amber-dark);font-weight:500}
+.next-steps-box{background:var(--navy);border-radius:10px;padding:16px 18px;font-size:0.875rem;color:rgba(245,240,232,0.7);line-height:1.6;margin-top:16px}
+.next-steps-box strong{color:var(--amber)}
+
+/* ── EXERCISES ── */
+.exercise-card{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:24px;margin-bottom:16px}
+.ex-skill-tag{display:inline-block;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding:3px 10px;border-radius:100px;background:rgba(91,164,207,0.12);color:var(--sky);margin-bottom:10px}
+.ex-prompt{font-size:0.95rem;color:var(--navy);font-weight:600;margin-bottom:8px}
+.ex-instructions{font-size:0.85rem;color:#6B8299;line-height:1.6;margin-bottom:14px}
+.ex-response{width:100%;min-height:100px;padding:12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;resize:vertical;outline:none;transition:border-color 0.2s}
+.ex-response:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(244,165,54,0.1)}
+.ex-feedback{background:rgba(46,204,138,0.08);border:1px solid rgba(46,204,138,0.2);border-radius:8px;padding:12px 14px;font-size:0.85rem;color:#2A5440;line-height:1.6;margin-top:10px}
+.ex-example{background:var(--cream);border-radius:8px;padding:10px 12px;font-size:0.82rem;color:#6B8299;line-height:1.55;margin-top:8px;border-left:3px solid var(--amber)}
+.ex-example strong{color:var(--navy);font-size:0.75rem;display:block;margin-bottom:3px}
+
+/* ── MILESTONES ── */
+.milestones-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.milestone-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;transition:transform 0.2s,box-shadow 0.2s}
+.milestone-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.milestone-card.earned{border-color:rgba(244,165,54,0.3);background:linear-gradient(135deg,rgba(244,165,54,0.05),var(--white))}
+.mc-icon{font-size:2.2rem;margin-bottom:8px}
+.mc-label{font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:4px}
+.mc-status{font-size:0.75rem;color:#6B8299}
+.mc-status.earned{color:var(--emerald);font-weight:600}
+
+/* ── TEACHER DASHBOARD ── */
+#screen-teacher{background:var(--cream)}
+.teacher-main{padding:40px 5%;max-width:1200px;margin:0 auto}
+.t-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.t-title{font-size:2rem;margin-bottom:4px}
+.t-sub{color:#6B8299;font-size:0.9rem}
+.t-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.t-stat{background:var(--white);border-radius:14px;padding:20px;border:1px solid var(--border)}
+.ts-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:#6B8299;margin-bottom:8px}
+.ts-value{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--navy)}
+.ts-sub{font-size:0.78rem;color:#6B8299;margin-top:3px}
+
+/* ── HEATMAP ── */
+.heatmap-wrap{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:28px}
+.heatmap-header-bar{background:var(--navy);padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+.hh-title{font-size:1rem;color:var(--white);font-family:'Playfair Display',serif}
+.hh-legend{display:flex;gap:12px;align-items:center;font-size:0.72rem}
+.hl-item{display:flex;align-items:center;gap:5px;color:rgba(245,240,232,0.5)}
+.hl-dot{width:10px;height:10px;border-radius:3px}
+.heatmap-table{width:100%;border-collapse:separate;border-spacing:0}
+.heatmap-table th{padding:10px 14px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:#6B8299;font-weight:600;background:var(--cream);border-bottom:1px solid var(--border);text-align:center}
+.heatmap-table th:first-child{text-align:left}
+.heatmap-table td{padding:10px 14px;border-bottom:1px solid rgba(13,27,42,0.05);text-align:center;font-size:0.875rem}
+.heatmap-table td:first-child{text-align:left;font-weight:600;color:var(--navy)}
+.heatmap-table tr:last-child td{border-bottom:none}
+.heatmap-table tr:hover td{background:rgba(13,27,42,0.02)}
+.hc{border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:0.78rem;font-weight:500;display:inline-block;min-width:36px;cursor:default;transition:transform 0.15s}
+.hc:hover{transform:scale(1.15)}
+.hc1{background:rgba(232,93,117,0.15);color:#C0334A}
+.hc2{background:rgba(244,165,54,0.15);color:#B86A0A}
+.hc3{background:rgba(91,164,207,0.15);color:#2A6EA0}
+.hc4{background:rgba(46,204,138,0.15);color:#15795A}
+.hc5{background:rgba(46,204,138,0.25);color:#0D5A40}
+.alert-row td{background:rgba(232,93,117,0.04)!important}
+
+/* ── SUBMISSION DETAILS ── */
+.submissions-list{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:28px}
+.sl-header{background:var(--navy);padding:16px 24px;font-size:0.9rem;color:rgba(245,240,232,0.7);display:grid;grid-template-columns:1.5fr 2fr 1fr 1fr 1fr;gap:16px;font-weight:600;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em}
+.sl-row{display:grid;grid-template-columns:1.5fr 2fr 1fr 1fr 1fr;gap:16px;padding:14px 24px;border-bottom:1px solid rgba(13,27,42,0.06);align-items:center;transition:background 0.15s;cursor:pointer}
+.sl-row:last-child{border-bottom:none}
+.sl-row:hover{background:rgba(13,27,42,0.02)}
+.sl-name{font-weight:600;font-size:0.9rem;color:var(--navy)}
+.sl-preview{font-size:0.82rem;color:#6B8299;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sl-score{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--amber-dark);text-align:center}
+.sl-level{text-align:center}
+.sl-date{font-size:0.78rem;color:#6B8299;font-family:'DM Mono',monospace;text-align:center}
+.empty-state{text-align:center;padding:60px 20px;color:#6B8299}
+.empty-icon{font-size:3rem;margin-bottom:12px}
+.empty-title{font-size:1.1rem;font-weight:600;color:var(--navy);margin-bottom:6px}
+
+/* ── EMAIL SENT TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--cream);padding:14px 20px;border-radius:12px;font-size:0.875rem;box-shadow:var(--shadow-lg);z-index:300;display:flex;align-items:center;gap:10px;border-left:4px solid var(--emerald);max-width:360px;animation:slideIn 0.35s ease;line-height:1.5}
+.toast.error{border-left-color:var(--rose)}
+.toast.hidden{display:none}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── LOADING ── */
+.loading-overlay{position:fixed;inset:0;background:rgba(7,17,26,0.8);backdrop-filter:blur(6px);z-index:250;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.loading-overlay.hidden{display:none}
+.spinner{width:48px;height:48px;border:3px solid rgba(244,165,54,0.2);border-top-color:var(--amber);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:rgba(245,240,232,0.7);font-size:0.9rem}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;background:var(--cream-dark);border-radius:10px;padding:4px;margin-bottom:24px;max-width:fit-content;border:1px solid var(--border)}
+.tab{padding:0.6rem 1.4rem;border-radius:7px;font-weight:600;font-size:0.875rem;cursor:pointer;transition:all 0.2s;color:#6B8299;border:none;background:none;font-family:'DM Sans',sans-serif}
+.tab.active{background:var(--navy);color:var(--white);box-shadow:0 2px 8px rgba(13,27,42,0.2)}
+
+/* ── EMAIL PREVIEW ── */
+.email-preview{background:var(--cream);border-radius:10px;padding:16px;border:1px solid var(--border);margin-top:12px;font-size:0.82rem;color:#6B8299;line-height:1.6}
+.ep-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--navy);margin-bottom:6px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .student-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .stat-row,.t-stats{grid-template-columns:1fr 1fr}
+  .sl-header,.sl-row{grid-template-columns:1.5fr 1fr 1fr}
+  .sl-preview,.sl-date{display:none}
+  .form-row{grid-template-columns:1fr}
+  .student-main{padding:24px 20px}
+  .teacher-main{padding:24px 5%}
+}
+@media(max-width:600px){
+  .stat-row,.t-stats{grid-template-columns:1fr}
+  .landing-title{font-size:2.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOADING OVERLAY ── -->
+<div class="loading-overlay hidden" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Analyzing your writing with AI…</div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast hidden" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: LANDING
+══════════════════════════════════════════ -->
+<div class="screen active" id="screen-landing">
+  <div class="landing-hero">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="landing-badge"><div class="badge-dot"></div> Lynn Public Schools — Beta Pilot</div>
+    <h1 class="landing-title">Every student can become<em>a stronger writer.</em></h1>
+    <p class="landing-sub">AI-powered writing assessment, personalized feedback, and targeted practice — built for every skill level.</p>
+    <div class="landing-actions">
+      <button class="landing-btn-student" onclick="openModal('modal-student')">
+        ✍️ I'm a Student
+      </button>
+      <button class="landing-btn-teacher" onclick="openModal('modal-teacher-login')">
+        📊 I'm a Teacher
+      </button>
+    </div>
+    <div class="landing-features">
+      <div class="lf-item"><div class="lf-icon">⚡</div><div class="lf-label">Instant Feedback</div></div>
+      <div class="lf-item"><div class="lf-icon">🎯</div><div class="lf-label">Targeted Practice</div></div>
+      <div class="lf-item"><div class="lf-icon">📈</div><div class="lf-label">Skill Tracking</div></div>
+      <div class="lf-item"><div class="lf-icon">🏆</div><div class="lf-label">Achievements</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: STUDENT
+══════════════════════════════════════════ -->
+<div class="screen" id="screen-student">
+  <div class="topnav">
+    <div class="nav-brand" onclick="showScreen('landing')">
+      <div class="nav-mark">W</div> WriteLift AI
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">Student: <span id="s-nav-name">—</span></div>
+      <button class="btn-nav" onclick="showScreen('landing')">← Exit</button>
+    </div>
+  </div>
+  <div class="student-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-greeting">
+        <div class="sidebar-name" id="sidebar-name">Welcome</div>
+        <div class="sidebar-class" id="sidebar-class">—</div>
+      </div>
+      <div class="sidebar-level">
+        <div class="sl-label">Overall Level</div>
+        <div class="sl-value" id="sidebar-level">—</div>
+        <div class="sl-sub">out of 5</div>
+      </div>
+      <ul class="sidebar-nav">
+        <li class="snav-item active" onclick="switchStudentTab('dashboard')"><span class="snav-icon">⌂</span> Dashboard</li>
+        <li class="snav-item" onclick="switchStudentTab('write')"><span class="snav-icon">✍️</span> Write</li>
+        <li class="snav-item" onclick="switchStudentTab('exercises')"><span class="snav-icon">🎯</span> Exercises <span id="ex-badge" style="background:var(--amber);color:var(--navy);border-radius:100px;padding:1px 7px;font-size:0.7rem;margin-left:4px;display:none"></span></li>
+        <li class="snav-item" onclick="switchStudentTab('milestones')"><span class="snav-icon">🏆</span> Milestones</li>
+      </ul>
+    </div>
+    <!-- Main -->
+    <div class="student-main" id="student-main-content">
+      <!-- Content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: TEACHER
+══════════════════════════════════════════ -->
+<div class="screen" id="screen-teacher">
+  <div class="topnav">
+    <div class="nav-brand" onclick="showScreen('landing')">
+      <div class="nav-mark">W</div> WriteLift AI
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">Teacher View — <span id="t-class-display">—</span></div>
+      <button class="btn-nav btn-sm" onclick="exportCSV()" style="margin-right:4px">⬇ Export</button>
+      <button class="btn-nav" onclick="showScreen('landing')">← Exit</button>
+    </div>
+  </div>
+  <div class="teacher-main" id="teacher-main-content">
+    <!-- Content injected by JS -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════ -->
+
+<!-- Student Setup -->
+<div class="modal-bg hidden" id="modal-student">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-student')">✕</button>
+    <h2 class="modal-title">Join Your Class</h2>
+    <p class="modal-sub">Enter your info and your teacher will see your work.</p>
+    <div class="form-group">
+      <label class="form-label">Your First & Last Name <span>*</span></label>
+      <input class="form-input" id="s-name" type="text" placeholder="e.g. Alex Rivera" autocomplete="name">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Grade Level <span>*</span></label>
+        <select class="form-select" id="s-grade">
+          <option value="">Select grade</option>
+          <option value="5">5th Grade</option>
+          <option value="6">6th Grade</option>
+          <option value="7">7th Grade</option>
+          <option value="8">8th Grade</option>
+          <option value="9">9th Grade</option>
+          <option value="10">10th Grade</option>
+          <option value="11">11th Grade</option>
+          <option value="12">12th Grade</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Class Period</label>
+        <input class="form-input" id="s-period" type="text" placeholder="e.g. Period 2">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Writing Prompt (from your teacher)</label>
+      <input class="form-input" id="s-prompt-code" type="text" placeholder="Enter prompt code or leave blank">
+      <div class="form-hint">Your teacher will give you a code, or you can use a free-write prompt.</div>
+    </div>
+    <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="studentSignIn()">Start Writing →</button>
+  </div>
+</div>
+
+<!-- Teacher Setup / Login -->
+<div class="modal-bg hidden" id="modal-teacher-login">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-teacher-login')">✕</button>
+    <h2 class="modal-title">Teacher Dashboard</h2>
+    <p class="modal-sub">Set up your class and the AI will email you every student result.</p>
+    <div class="form-group">
+      <label class="form-label">Teacher Email <span>*</span></label>
+      <input class="form-input" id="t-email" type="email" value="kwiatekjo@lynnschools.org" placeholder="your@email.com">
+      <div class="form-hint">All student results will be sent to this address automatically.</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Class Name <span>*</span></label>
+        <input class="form-input" id="t-class" type="text" placeholder="e.g. 7th Grade ELA Period 2">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Grade Level</label>
+        <select class="form-select" id="t-grade">
+          <option value="6">6th Grade</option>
+          <option value="7" selected>7th Grade</option>
+          <option value="8">8th Grade</option>
+          <option value="9">9th Grade</option>
+          <option value="10">10th Grade</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Writing Prompt for Students</label>
+      <textarea class="form-textarea" id="t-prompt" placeholder="e.g. Write an argumentative essay about whether schools should have year-round schedules. Use at least two pieces of evidence and address one counterargument." style="min-height:90px"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Prompt Code (share with students)</label>
+      <input class="form-input" id="t-code" type="text" placeholder="e.g. JOHNSON2025" style="font-family:'DM Mono',monospace">
+      <div class="form-hint">Students enter this code so their work is linked to your class.</div>
+    </div>
+    <input type="hidden" id="t-apikey" value="">
+    <div class="form-group">
+      <label class="form-label">EmailJS Setup (for email notifications)</label>
+      <div class="form-row">
+        <div>
+          <input class="form-input" id="t-emailjs-public" type="text" placeholder="EmailJS Public Key">
+        </div>
+        <div>
+          <input class="form-input" id="t-emailjs-service" type="text" placeholder="Service ID">
+        </div>
+      </div>
+      <input class="form-input" id="t-emailjs-template" type="text" placeholder="Template ID" style="margin-top:8px">
+      <div class="api-note" style="margin-top:8px">
+        Free at <a href="https://www.emailjs.com/" target="_blank">emailjs.com</a> — connect your Gmail/Outlook. 
+        <strong>Or skip this</strong> — results still show in the dashboard and you can export to CSV.
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="teacherSetup()">Open Dashboard →</button>
+  </div>
+</div>
+
+<!-- Submission Detail Modal -->
+<div class="modal-bg hidden" id="modal-submission">
+  <div class="modal" style="max-width:680px">
+    <button class="modal-close" onclick="closeModal('modal-submission')">✕</button>
+    <div id="modal-submission-content"></div>
+  </div>
+</div>
+
+<!-- saveFallbackKey kept for legacy compat -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const STATE = {
+  screen: 'landing',
+  student: null,     // { name, grade, period, promptCode }
+  teacher: null,     // { email, className, grade, prompt, code, apiKey, emailjsPublic, emailjsService, emailjsTemplate }
+  submissions: [],   // persisted in localStorage
+  exercises: [],
+  skills: { organization:1, evidence:1, grammar:1, sentence_variety:1, vocabulary:1, argument_strength:1 },
+  milestones: [],
+  studentTab: 'dashboard',
+  pendingSubmitResolve: null,
+};
+
+const SKILL_COLORS = {
+  organization: '#F4A536', evidence: '#5BA4CF',
+  grammar: '#2ECC8A', sentence_variety: '#E85D75',
+  vocabulary: '#A78BFA', argument_strength: '#FB923C'
+};
+
+const SKILL_LABELS = {
+  organization: 'Organization', evidence: 'Evidence',
+  grammar: 'Grammar', sentence_variety: 'Sentences',
+  vocabulary: 'Vocabulary', argument_strength: 'Argument'
+};
+
+const MILESTONES_DEF = [
+  { type:'first_submission', label:'First Submission', icon:'✍️', desc:'Submitted your first essay' },
+  { type:'five_submissions', label:'5 Strong', icon:'🔥', desc:'Completed 5 submissions' },
+  { type:'level_2', label:'Level 2 Reached', icon:'📈', desc:'Improved to Level 2' },
+  { type:'level_3', label:'Grade Level!', icon:'🌟', desc:'Reached Level 3 proficiency' },
+  { type:'grammar_star', label:'Grammar Star', icon:'✅', desc:'Grammar score above 80' },
+  { type:'strong_evidence', label:'Evidence Expert', icon:'🔍', desc:'Evidence score above 80' },
+  { type:'org_master', label:'Org Master', icon:'🗂️', desc:'Organization score above 80' },
+];
+
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+const STORAGE_KEY = 'writelift_data_v1';
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    teacher: STATE.teacher,
+    submissions: STATE.submissions,
+  }));
+}
+function loadData() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (d.teacher) STATE.teacher = d.teacher;
+    if (d.submissions) STATE.submissions = d.submissions;
+  } catch(e) {}
+}
+loadData();
+
+// ══════════════════════════════════════════
+// SCREEN MANAGEMENT
+// ══════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  STATE.screen = name;
+  if (name === 'student') renderStudentDashboard();
+  if (name === 'teacher') renderTeacherDashboard();
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+  document.getElementById(id).querySelector('input,textarea,select')?.focus();
+}
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// ══════════════════════════════════════════
+// AUTH FLOWS
+// ══════════════════════════════════════════
+function studentSignIn() {
+  const name = document.getElementById('s-name').value.trim();
+  const grade = document.getElementById('s-grade').value;
+  const period = document.getElementById('s-period').value.trim();
+  const promptCode = document.getElementById('s-prompt-code').value.trim().toUpperCase();
+  if (!name || !grade) return showToast('Please enter your name and grade level.', true);
+  STATE.student = { name, grade: parseInt(grade), period, promptCode };
+  STATE.exercises = [];
+  STATE.milestones = [];
+  // load from storage
+  const storedSubs = STATE.submissions.filter(s => s.studentName === name);
+  if (storedSubs.length) {
+    const last = storedSubs[storedSubs.length - 1];
+    if (last.skills) STATE.skills = { ...last.skills };
+    if (last.milestones) STATE.milestones = [...new Set([...STATE.milestones, ...last.milestones])];
+    if (last.exercises) STATE.exercises = last.exercises;
+  }
+  closeModal('modal-student');
+  showScreen('student');
+}
+
+function teacherSetup() {
+  const email = document.getElementById('t-email').value.trim();
+  const className = document.getElementById('t-class').value.trim();
+  const grade = parseInt(document.getElementById('t-grade').value);
+  const prompt = document.getElementById('t-prompt').value.trim();
+  const code = document.getElementById('t-code').value.trim().toUpperCase();
+  const apiKey = document.getElementById('t-apikey').value.trim();
+  const emailjsPublic = document.getElementById('t-emailjs-public').value.trim();
+  const emailjsService = document.getElementById('t-emailjs-service').value.trim();
+  const emailjsTemplate = document.getElementById('t-emailjs-template').value.trim();
+  if (!email || !className) return showToast('Please enter your email and class name.', true);
+  STATE.teacher = { email, className, grade, prompt, code, apiKey, emailjsPublic, emailjsService, emailjsTemplate };
+  saveData();
+  closeModal('modal-teacher-login');
+  showScreen('teacher');
+}
+
+// ══════════════════════════════════════════
+// STUDENT TABS
+// ══════════════════════════════════════════
+function switchStudentTab(tab) {
+  STATE.studentTab = tab;
+  document.querySelectorAll('.snav-item').forEach((el, i) => {
+    el.classList.toggle('active', ['dashboard','write','exercises','milestones'][i] === tab);
+  });
+  renderStudentDashboard();
+}
+
+function renderStudentDashboard() {
+  const s = STATE.student;
+  if (!s) return;
+  document.getElementById('s-nav-name').textContent = s.name.split(' ')[0];
+  document.getElementById('sidebar-name').textContent = s.name;
+  document.getElementById('sidebar-class').textContent = s.period ? `Grade ${s.grade} · ${s.period}` : `Grade ${s.grade}`;
+  const overallLevel = calcOverallLevel();
+  document.getElementById('sidebar-level').textContent = overallLevel.toFixed(1);
+
+  // Exercise badge
+  const pending = STATE.exercises.filter(e => !e.completed).length;
+  const badge = document.getElementById('ex-badge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline'; }
+  else badge.style.display = 'none';
+
+  const container = document.getElementById('student-main-content');
+  if (STATE.studentTab === 'dashboard') container.innerHTML = renderTabDashboard();
+  else if (STATE.studentTab === 'write') container.innerHTML = renderTabWrite();
+  else if (STATE.studentTab === 'exercises') container.innerHTML = renderTabExercises();
+  else if (STATE.studentTab === 'milestones') container.innerHTML = renderTabMilestones();
+  attachStudentEvents();
+}
+
+function calcOverallLevel() {
+  const vals = Object.values(STATE.skills);
+  return vals.reduce((a,b) => a+b, 0) / vals.length;
+}
+
+function scoreToLevel(score) {
+  if (score >= 90) return 5;
+  if (score >= 75) return 4;
+  if (score >= 55) return 3;
+  if (score >= 35) return 2;
+  return 1;
+}
+
+// ── TAB: DASHBOARD ──
+function renderTabDashboard() {
+  const storedSubs = STATE.submissions.filter(s => s.studentName === STATE.student.name);
+  const recent = storedSubs.slice(-3).reverse();
+  const overallLevel = calcOverallLevel();
+  return `
+    <h1 class="page-title">Good day, ${STATE.student.name.split(' ')[0]} 👋</h1>
+    <p class="page-sub">Here's where you stand and what to work on next.</p>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="sc-label">Overall Level</div>
+        <div class="sc-value">${overallLevel.toFixed(1)}</div>
+        <div class="sc-sub">out of 5.0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Submissions</div>
+        <div class="sc-value">${storedSubs.length}</div>
+        <div class="sc-sub${STATE.exercises.filter(e=>!e.completed).length ? ' warn' : ''}">${STATE.exercises.filter(e=>!e.completed).length} exercises pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Milestones</div>
+        <div class="sc-value">${STATE.milestones.length}</div>
+        <div class="sc-sub">Keep going! 🏆</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Your Skill Levels <span style="font-size:0.78rem;font-weight:400;color:#6B8299">Updated after each submission</span></div>
+      ${Object.entries(STATE.skills).map(([skill, level]) => {
+        const pct = (level / 5) * 100;
+        return `<div class="skill-row">
+          <span class="skill-name">${SKILL_LABELS[skill]}</span>
+          <div class="skill-track"><div class="skill-fill" style="width:${pct}%;background:${SKILL_COLORS[skill]}"></div></div>
+          <span class="skill-score">${level.toFixed(1)}</span>
+          <span class="skill-level-badge lv${Math.round(level)}">L${Math.round(level)}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    ${recent.length ? `
+    <div class="panel">
+      <div class="panel-title">Recent Submissions</div>
+      ${recent.map(sub => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:600;font-size:0.875rem">${sub.assignmentTitle || 'Free Write'}</div>
+            <div style="font-size:0.78rem;color:#6B8299">${new Date(sub.date).toLocaleDateString()}</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;color:#6B8299">${sub.wordCount}w</span>
+            <span class="skill-level-badge lv${sub.overallLevel || 1}" style="width:auto;padding:3px 10px">Score: ${sub.overallScore || '—'}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn btn-primary" onclick="switchStudentTab('write')">✍️ Submit New Writing</button>
+    </div>`;
+}
+
+// ── TAB: WRITE ──
+function getAssignmentForStudent() {
+  if (!STATE.teacher) return null;
+  const code = STATE.student?.promptCode;
+  if (code && STATE.teacher.code && code !== STATE.teacher.code) return null;
+  if (STATE.teacher.prompt) return { title: STATE.teacher.className || 'Writing Assignment', prompt: STATE.teacher.prompt };
+  return null;
+}
+
+function renderTabWrite() {
+  const assignment = getAssignmentForStudent();
+  return `
+    ${assignment ? `
+    <div class="assignment-card">
+      <div class="ac-label">📋 Assignment</div>
+      <h2 class="ac-title">${assignment.title}</h2>
+      <div class="ac-prompt">${assignment.prompt}</div>
+      <div class="ac-meta">
+        <span>✍️ Write a complete response below</span>
+        <span>📏 Aim for 150–600 words</span>
+      </div>
+    </div>` : `
+    <div class="assignment-card" style="background:var(--navy-mid)">
+      <div class="ac-label">🖊 Free Write</div>
+      <h2 class="ac-title">Write on any topic</h2>
+      <div class="ac-prompt">No assignment linked yet. Write about anything — your writing will still be assessed on all 6 skill areas. Ask your teacher for a prompt code to link your submission to their class.</div>
+    </div>`}
+    <div class="writing-area">
+      <div class="writing-area-header">
+        <span class="writing-area-title">Your Response</span>
+        <span class="word-count" id="wc-display">0 words</span>
+      </div>
+      <textarea id="essay-input" placeholder="Start writing here... Take your time and write your best work. The AI will give you detailed feedback on your organization, evidence, grammar, vocabulary, and argument strength."
+        oninput="updateWordCount(this)"></textarea>
+    </div>
+    <div class="submit-row">
+      <span class="submit-hint">Your teacher will receive your results at their email automatically.</span>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitEssay()">
+        ⚡ Submit for AI Assessment
+      </button>
+    </div>
+    <div id="assessment-result" style="margin-top:24px"></div>`;
+}
+
+function updateWordCount(el) {
+  const words = el.value.trim().split(/\s+/).filter(Boolean).length;
+  const display = document.getElementById('wc-display');
+  if (!display) return;
+  display.textContent = words + ' words';
+  display.className = 'word-count' + (words >= 150 ? ' good' : words >= 80 ? '' : ' warn');
+}
+
+// ── TAB: EXERCISES ──
+function renderTabExercises() {
+  const pending = STATE.exercises.filter(e => !e.completed);
+  const done = STATE.exercises.filter(e => e.completed);
+  if (!STATE.exercises.length) return `
+    <h1 class="page-title">Practice Exercises</h1>
+    <p class="page-sub">Targeted exercises will appear here after you submit writing.</p>
+    <div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-title">No exercises yet</div><p>Submit your first essay to get personalized practice exercises.</p></div>`;
+  return `
+    <h1 class="page-title">Practice Exercises</h1>
+    <p class="page-sub">${pending.length} exercise${pending.length !== 1 ? 's' : ''} to complete · ${done.length} done</p>
+    ${pending.map((ex, i) => `
+    <div class="exercise-card">
+      <span class="ex-skill-tag">${ex.skill_area}</span>
+      <div class="ex-prompt">${ex.prompt}</div>
+      <div class="ex-instructions">${ex.instructions}</div>
+      ${ex.example_response ? `<div class="ex-example"><strong>Model Response:</strong>${ex.example_response}</div>` : ''}
+      <textarea class="ex-response" id="ex-response-${i}" placeholder="Write your response here..."></textarea>
+      ${ex.feedback ? `<div class="ex-feedback">✅ ${ex.feedback}</div>` : `
+      <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="submitExercise(${i})">Submit Response</button>`}
+    </div>`).join('')}
+    ${done.length ? `<div class="panel" style="margin-top:8px"><div class="panel-title" style="color:#6B8299">Completed (${done.length})</div>
+    ${done.map(ex => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:0.875rem;color:#6B8299">✅ <strong style="color:var(--navy)">${ex.skill_area}</strong> — ${ex.prompt.substring(0,60)}…</div>`).join('')}
+    </div>` : ''}`;
+}
+
+// ── TAB: MILESTONES ──
+function renderTabMilestones() {
+  return `
+    <h1 class="page-title">Milestones</h1>
+    <p class="page-sub">${STATE.milestones.length} earned · ${MILESTONES_DEF.length} total</p>
+    <div class="milestones-grid">
+      ${MILESTONES_DEF.map(m => {
+        const earned = STATE.milestones.includes(m.type);
+        return `<div class="milestone-card ${earned ? 'earned' : ''}">
+          <div class="mc-icon" style="filter:${earned ? 'none' : 'grayscale(1) opacity(0.3)'}">${m.icon}</div>
+          <div class="mc-label">${m.label}</div>
+          <div class="mc-status ${earned ? 'earned' : ''}">${earned ? '✓ Earned!' : m.desc}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function attachStudentEvents() {
+  // Re-bind word count if on write tab
+  const ea = document.getElementById('essay-input');
+  if (ea) ea.addEventListener('input', () => updateWordCount(ea));
+}
+
+// ══════════════════════════════════════════
+// SUBMIT & AI ASSESSMENT
+// ══════════════════════════════════════════
+async function submitEssay() {
+  const content = document.getElementById('essay-input')?.value?.trim();
+  if (!content || content.split(/\s+/).length < 30) return showToast('Please write at least 30 words before submitting.', true);
+
+  showLoading('Analyzing your writing with AI…');
+  const btn = document.getElementById('submit-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const assignment = getAssignmentForStudent();
+    const result = await callAI(content, STATE.student.grade, assignment?.prompt);
+    hideLoading();
+
+    // Update skill levels (weighted average)
+    for (const [skill, score] of Object.entries(result.scores)) {
+      const level = scoreToLevel(score);
+      STATE.skills[skill] = STATE.skills[skill] * 0.3 + level * 0.7;
+    }
+
+    // Check milestones
+    const newMilestones = checkMilestones(result);
+
+    // Generate exercises
+    const exercises = await generateExercises(result.micro_skills_flagged, calcOverallLevel());
+
+    // Store exercises
+    STATE.exercises.unshift(...exercises.filter(e => !e.completed));
+
+    // Save submission
+    const submission = {
+      id: Date.now(),
+      studentName: STATE.student.name,
+      grade: STATE.student.grade,
+      period: STATE.student.period,
+      promptCode: STATE.student.promptCode,
+      assignmentTitle: assignment?.title || 'Free Write',
+      content,
+      wordCount: content.split(/\s+/).filter(Boolean).length,
+      date: new Date().toISOString(),
+      overallScore: result.overall_score,
+      overallLevel: result.overall_level,
+      scores: result.scores,
+      skills: { ...STATE.skills },
+      feedback_summary: result.feedback_summary,
+      strengths: result.strength_highlights,
+      improvements: result.improvement_highlights,
+      micro_skills: result.micro_skills_flagged,
+      next_steps: result.next_steps,
+      milestones: STATE.milestones,
+      exercises: STATE.exercises,
+    };
+    STATE.submissions.push(submission);
+    saveData();
+
+    // Send email to teacher
+    if (STATE.teacher?.email) {
+      await sendEmailNotification(submission, result);
+    }
+
+    // Show results
+    const resultEl = document.getElementById('assessment-result');
+    if (resultEl) resultEl.innerHTML = renderAssessmentResult(result, newMilestones);
+
+    // Refresh sidebar level
+    const lvEl = document.getElementById('sidebar-level');
+    if (lvEl) lvEl.textContent = calcOverallLevel().toFixed(1);
+
+    // Update ex badge
+    const pending = STATE.exercises.filter(e => !e.completed).length;
+    const badge = document.getElementById('ex-badge');
+    if (badge) { badge.textContent = pending; badge.style.display = pending ? 'inline' : 'none'; }
+
+    window.scrollTo({ top: resultEl?.offsetTop - 80, behavior: 'smooth' });
+    showToast('✅ Assessment complete! Check your results below.');
+
+  } catch (err) {
+    hideLoading();
+    if (btn) btn.disabled = false;
+    showToast('Error: ' + err.message, true);
+  }
+}
+
+// ── AI Call (uses built-in artifact API — no CORS, no API key needed) ──
+async function callAI(content, gradeLevel, assignmentPrompt) {
+  const rubric = `ORGANIZATION: Paragraph structure, flow, transitions (L1=no structure, L3=basic, L5=sophisticated)
+EVIDENCE: Supporting details, examples, reasoning (L1=none, L3=basic integration, L5=nuanced synthesis)
+GRAMMAR: Correctness, mechanics, punctuation (L1=many errors, L3=some errors, L5=near-flawless)
+SENTENCE_VARIETY: Variation in length and structure (L1=all similar, L3=some mix, L5=rich deliberate variety)
+VOCABULARY: Word choice, precision, richness (L1=very basic, L3=adequate, L5=sophisticated)
+ARGUMENT_STRENGTH: Thesis, reasoning, counterargument (L1=no position, L3=clear thesis, L5=compelling)`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1800,
+      system: `You are WriteLift AI, a supportive K-12 writing assessment engine. Assess Grade ${gradeLevel} writing fairly and encouragingly. Reference specific sentences. Be specific and actionable. Respond ONLY with valid JSON — no markdown, no backticks, just the raw JSON object.`,
+      messages: [{
+        role: 'user',
+        content: `Grade ${gradeLevel} student.${assignmentPrompt ? ` Assignment: "${assignmentPrompt}"` : ' Free write.'}\n\nRUBRIC:\n${rubric}\n\nSTUDENT WRITING:\n"""\n${content}\n"""\n\nRespond ONLY with this exact JSON structure:\n{"scores":{"organization":0-100,"evidence":0-100,"grammar":0-100,"sentence_variety":0-100,"vocabulary":0-100,"argument_strength":0-100},"feedback_summary":"2-3 warm encouraging sentences about overall quality","strength_highlights":[{"skill":"skillname","text":"exact short quote from student","comment":"why this is strong"}],"improvement_highlights":[{"skill":"skillname","text":"short quote or description","comment":"specific actionable suggestion","example":"rewritten version"}],"micro_skills_flagged":["specific weakness e.g. comma splices"],"next_steps":"one concrete action"}`
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${response.status}`);
+  }
+
+  const data = await response.json();
+  // Strip any accidental markdown fences
+  const rawText = data.content[0].text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+  const raw = JSON.parse(rawText);
+  const scores = raw.scores;
+  const total = Object.values(scores).reduce((a,b) => a+b, 0);
+  const overallScore = Math.round(total / Object.keys(scores).length);
+
+  return {
+    scores,
+    overall_score: overallScore,
+    overall_level: scoreToLevel(overallScore),
+    feedback_summary: raw.feedback_summary,
+    strength_highlights: raw.strength_highlights || [],
+    improvement_highlights: raw.improvement_highlights || [],
+    micro_skills_flagged: raw.micro_skills_flagged || [],
+    next_steps: raw.next_steps,
+  };
+}
+
+// ── Generate Exercises ──
+async function generateExercises(microSkills, overallLevel) {
+  if (!microSkills?.length) return [];
+  const top = microSkills.slice(0, 2);
+  const exercises = [];
+
+  for (const skill of top) {
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 600,
+          system: 'You are a K-12 writing coach. Create short, engaging exercises. Respond ONLY with raw JSON — no markdown, no backticks.',
+          messages: [{ role: 'user', content: `Level ${Math.round(overallLevel)}/5 student needs practice: "${skill}". Respond with JSON only: {"exercise_type":"","prompt":"exercise prompt","instructions":"1-2 sentence instructions","example_response":"model answer"}` }]
+        })
+      });
+      if (!resp.ok) continue;
+      const d = await resp.json();
+      const rawText = d.content[0].text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+      const ex = JSON.parse(rawText);
+      exercises.push({ ...ex, skill_area: skill, completed: false, feedback: null, id: Date.now() + Math.random() });
+    } catch(e) { console.warn('Exercise gen failed for', skill, e); }
+  }
+  return exercises;
+}
+
+// ── Exercise Submit ──
+async function submitExercise(index) {
+  const pending = STATE.exercises.filter(e => !e.completed);
+  const ex = pending[index];
+  const resp = document.getElementById(`ex-response-${index}`)?.value?.trim();
+  if (!resp || resp.length < 10) return showToast('Please write a response first.', true);
+
+  showLoading('Getting feedback on your exercise…');
+  try {
+    const fbResp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: 'You are a supportive K-12 writing coach. Give brief, specific, encouraging feedback in 2-3 sentences.',
+        messages: [{ role: 'user', content: `Exercise on "${ex.skill_area}". Prompt: "${ex.prompt}". Student: "${resp}". Model: "${ex.example_response}". Feedback:` }]
+      })
+    });
+    const d = await fbResp.json();
+    const feedback = d.content[0].text;
+    ex.completed = true;
+    ex.feedback = feedback;
+    ex.student_response = resp;
+
+    // Update in submissions
+    const lastSub = STATE.submissions.filter(s => s.studentName === STATE.student.name).pop();
+    if (lastSub) { lastSub.exercises = STATE.exercises; saveData(); }
+
+    hideLoading();
+    switchStudentTab('exercises');
+    showToast('Great work! Feedback added.');
+  } catch(e) {
+    hideLoading();
+    showToast('Could not get feedback. Try again.', true);
+  }
+}
+
+// ── Milestones ──
+function checkMilestones(result) {
+  const earned = [];
+  const level = calcOverallLevel();
+  const subs = STATE.submissions.filter(s => s.studentName === STATE.student.name).length;
+
+  const checks = [
+    { cond: subs === 0, type: 'first_submission' },
+    { cond: subs >= 4, type: 'five_submissions' },
+    { cond: level >= 2, type: 'level_2' },
+    { cond: level >= 3, type: 'level_3' },
+    { cond: result.scores.grammar >= 80, type: 'grammar_star' },
+    { cond: result.scores.evidence >= 80, type: 'strong_evidence' },
+    { cond: result.scores.organization >= 80, type: 'org_master' },
+  ];
+
+  for (const { cond, type } of checks) {
+    if (cond && !STATE.milestones.includes(type)) {
+      STATE.milestones.push(type);
+      earned.push(MILESTONES_DEF.find(m => m.type === type));
+    }
+  }
+  return earned.filter(Boolean);
+}
+
+// ── Render Assessment Result ──
+function renderAssessmentResult(result, newMilestones) {
+  const levelLabel = ['', 'Below Grade', 'Approaching', 'Grade Level', 'Above Grade', 'Advanced'][result.overall_level];
+  return `
+    <div class="assessment-panel">
+      <div class="ap-header">
+        <div class="ap-title">📊 AI Assessment Complete</div>
+        <div class="ap-score">
+          <div class="ap-score-num">${result.overall_score}</div>
+          <div class="ap-score-label">Level ${result.overall_level} · ${levelLabel}</div>
+        </div>
+      </div>
+      <div class="ap-body">
+        <div class="ap-summary">${result.feedback_summary}</div>
+
+        ${result.strength_highlights?.length ? `
+        <div class="feedback-section-title">✅ Your Strengths</div>
+        ${result.strength_highlights.map(s => `
+        <div class="feedback-item fi-strength">
+          <span class="fi-icon">🟢</span>
+          <div class="fi-body"><strong>"${s.text}"</strong> — ${s.comment}</div>
+        </div>`).join('')}` : ''}
+
+        ${result.improvement_highlights?.length ? `
+        <div class="feedback-section-title" style="margin-top:16px">📝 Improvements</div>
+        ${result.improvement_highlights.map(s => `
+        <div class="feedback-item fi-improve">
+          <span class="fi-icon">🟡</span>
+          <div class="fi-body"><strong>"${s.text}"</strong> — ${s.comment}${s.example ? ` <em>Try: "${s.example}"</em>` : ''}</div>
+        </div>`).join('')}` : ''}
+
+        <div style="margin-top:20px">
+          <div class="feedback-section-title">📈 Skill Breakdown</div>
+          ${Object.entries(result.scores).map(([skill, score]) => `
+          <div class="skill-row">
+            <span class="skill-name">${SKILL_LABELS[skill]}</span>
+            <div class="skill-track"><div class="skill-fill" style="width:${score}%;background:${SKILL_COLORS[skill]}"></div></div>
+            <span class="skill-score">${score}</span>
+            <span class="skill-level-badge lv${scoreToLevel(score)}">L${scoreToLevel(score)}</span>
+          </div>`).join('')}
+        </div>
+
+        ${result.next_steps ? `<div class="next-steps-box">🎯 <strong>Next Step:</strong> ${result.next_steps}</div>` : ''}
+
+        ${newMilestones.length ? `
+        <div style="margin-top:16px;background:rgba(244,165,54,0.08);border:1px solid rgba(244,165,54,0.2);border-radius:10px;padding:14px 16px">
+          <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--amber-dark);font-weight:700;margin-bottom:8px">🎉 New Milestones Earned!</div>
+          ${newMilestones.map(m => `<div style="font-size:0.9rem;margin-bottom:4px">${m.icon} <strong>${m.label}</strong></div>`).join('')}
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// EMAIL (EmailJS or fallback)
+// ══════════════════════════════════════════
+async function sendEmailNotification(submission, result) {
+  const t = STATE.teacher;
+  const levelLabel = ['', 'Below Grade', 'Approaching', 'Grade Level', 'Above Grade', 'Advanced'][result.overall_level];
+
+  // Try EmailJS if configured
+  if (t.emailjsPublic && t.emailjsService && t.emailjsTemplate) {
+    try {
+      if (!window.emailjs) {
+        await loadScript('https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js');
+        emailjs.init(t.emailjsPublic);
+      }
+      const skillsHtml = Object.entries(result.scores)
+        .map(([s, v]) => `${SKILL_LABELS[s]}: ${v}/100 (L${scoreToLevel(v)})`).join(' | ');
+      const strengths = result.strength_highlights?.map(s => `• ${s.comment}`).join('\n') || 'N/A';
+      const improvements = result.improvement_highlights?.map(s => `• ${s.comment}`).join('\n') || 'N/A';
+
+      await emailjs.send(t.emailjsService, t.emailjsTemplate, {
+        to_email: t.email,
+        teacher_email: t.email,
+        student_name: submission.studentName,
+        student_grade: submission.grade,
+        class_name: t.className,
+        assignment: submission.assignmentTitle,
+        overall_score: result.overall_score,
+        overall_level: result.overall_level,
+        level_label: levelLabel,
+        skills: skillsHtml,
+        feedback_summary: result.feedback_summary,
+        strengths: strengths,
+        improvements: improvements,
+        next_steps: result.next_steps || '',
+        essay_preview: submission.content.substring(0, 300) + '…',
+        word_count: submission.wordCount,
+        submission_date: new Date().toLocaleString(),
+      });
+      showToast(`📧 Results emailed to ${t.email}`);
+      return;
+    } catch(e) {
+      console.warn('EmailJS failed:', e);
+    }
+  }
+  // Fallback: show that results are saved for teacher
+  console.log('Results saved for teacher dashboard (no email config)');
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+// ══════════════════════════════════════════
+// TEACHER DASHBOARD
+// ══════════════════════════════════════════
+function renderTeacherDashboard() {
+  const t = STATE.teacher;
+  if (!t) return;
+  document.getElementById('t-class-display').textContent = t.className || 'Your Class';
+
+  const mySubs = t.code
+    ? STATE.submissions.filter(s => s.promptCode === t.code)
+    : STATE.submissions;
+
+  const container = document.getElementById('teacher-main-content');
+
+  // Stats
+  const students = [...new Set(mySubs.map(s => s.studentName))];
+  const avgScore = mySubs.length
+    ? Math.round(mySubs.reduce((a,b) => a + (b.overallScore||0), 0) / mySubs.length)
+    : 0;
+  const needsHelp = students.filter(name => {
+    const subs = mySubs.filter(s => s.studentName === name);
+    const last = subs[subs.length - 1];
+    return last && (last.overallLevel || 1) <= 2;
+  });
+
+  container.innerHTML = `
+    <div class="t-header">
+      <div>
+        <h1 class="t-title">📊 ${t.className || 'Teacher Dashboard'}</h1>
+        <p class="t-sub">Results sent to ${t.email} · ${mySubs.length} submissions received</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="openModal('modal-teacher-login')">⚙️ Settings</button>
+        <button class="btn btn-dark btn-sm" onclick="copyStudentLink()">🔗 Copy Student Link</button>
+      </div>
+    </div>
+
+    ${!t.emailjsPublic ? `
+    <div style="background:rgba(91,164,207,0.08);border:1px solid rgba(91,164,207,0.2);border-radius:12px;padding:16px 20px;margin-bottom:24px;font-size:0.875rem;color:#2A4E6A">
+      💡 <strong>Email notifications not configured.</strong> Add your EmailJS keys in Settings to get each student result emailed to ${t.email}. Until then, all results appear in this dashboard and can be exported.
+      <div style="margin-top:8px"><a href="https://www.emailjs.com/" target="_blank" style="color:var(--sky);font-weight:600">Set up EmailJS (free) →</a></div>
+    </div>` : ''}
+
+    <div class="t-stats">
+      <div class="t-stat"><div class="ts-label">Total Students</div><div class="ts-value">${students.length}</div><div class="ts-sub">who have submitted</div></div>
+      <div class="t-stat"><div class="ts-label">Submissions</div><div class="ts-value">${mySubs.length}</div><div class="ts-sub">total responses</div></div>
+      <div class="t-stat"><div class="ts-label">Avg Score</div><div class="ts-value">${avgScore || '—'}</div><div class="ts-sub">out of 100</div></div>
+      <div class="t-stat"><div class="ts-label">Needs Support</div><div class="ts-value" style="color:var(--rose)">${needsHelp.length}</div><div class="ts-sub">Level 1–2 students</div></div>
+    </div>
+
+    ${students.length ? `
+    <div class="heatmap-wrap">
+      <div class="heatmap-header-bar">
+        <span class="hh-title">Class Skill Heatmap</span>
+        <div class="hh-legend">
+          <div class="hl-item"><div class="hl-dot" style="background:rgba(232,93,117,0.6)"></div>L1</div>
+          <div class="hl-item"><div class="hl-dot" style="background:rgba(244,165,54,0.6)"></div>L2</div>
+          <div class="hl-item"><div class="hl-dot" style="background:rgba(91,164,207,0.6)"></div>L3</div>
+          <div class="hl-item"><div class="hl-dot" style="background:rgba(46,204,138,0.6)"></div>L4-5</div>
+        </div>
+      </div>
+      <table class="heatmap-table">
+        <thead><tr>
+          <th>Student</th>
+          <th>Org</th><th>Evidence</th><th>Grammar</th>
+          <th>Sentences</th><th>Vocab</th><th>Argument</th>
+          <th>Overall</th>
+        </tr></thead>
+        <tbody>
+          ${students.map(name => {
+            const subs = mySubs.filter(s => s.studentName === name);
+            const last = subs[subs.length - 1];
+            const skills = last?.scores || {};
+            const isAlert = (last?.overallLevel || 1) <= 2;
+            return `<tr class="${isAlert ? 'alert-row' : ''}">
+              <td>${name}${isAlert ? ' ⚠️' : ''}</td>
+              ${['organization','evidence','grammar','sentence_variety','vocabulary','argument_strength'].map(sk => {
+                const score = skills[sk];
+                const lv = score != null ? scoreToLevel(score) : '—';
+                return `<td><span class="hc hc${lv}" title="${SKILL_LABELS[sk]}: ${score || '—'}">${lv === '—' ? '—' : `L${lv}`}</span></td>`;
+              }).join('')}
+              <td><span class="hc hc${last?.overallLevel || 1}">${last?.overallLevel ? `L${last.overallLevel}` : '—'}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : ''}
+
+    <div style="font-size:1.1rem;font-family:'Playfair Display',serif;font-weight:700;margin-bottom:16px">All Submissions</div>
+    ${mySubs.length ? `
+    <div class="submissions-list">
+      <div class="sl-header">
+        <div>Student</div><div>Essay Preview</div>
+        <div>Score</div><div>Level</div><div>Date</div>
+      </div>
+      ${[...mySubs].reverse().map(sub => `
+      <div class="sl-row" onclick="viewSubmission('${sub.id}')">
+        <div><div class="sl-name">${sub.studentName}</div><div style="font-size:0.75rem;color:#6B8299">Gr.${sub.grade}${sub.period ? ' · ' + sub.period : ''}</div></div>
+        <div class="sl-preview">${sub.content.substring(0, 80)}…</div>
+        <div class="sl-score">${sub.overallScore || '—'}</div>
+        <div class="sl-level"><span class="hc hc${sub.overallLevel || 1}">L${sub.overallLevel || '—'}</span></div>
+        <div class="sl-date">${new Date(sub.date).toLocaleDateString()}</div>
+      </div>`).join('')}
+    </div>` : `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No submissions yet</div><p>Share the student link so students can start submitting.</p></div>`}
+
+    ${t.code ? `<div style="margin-top:16px;background:var(--cream-dark);border-radius:10px;padding:14px 18px;font-size:0.875rem;color:#6B8299">
+      📋 <strong style="color:var(--navy)">Student prompt code: <span class="mono" style="color:var(--amber-dark)">${t.code}</span></strong> — Share this with students so their submissions link to your class.
+    </div>` : ''}`;
+}
+
+function viewSubmission(id) {
+  const sub = STATE.submissions.find(s => s.id == id);
+  if (!sub) return;
+  const levelLabel = ['', 'Below Grade', 'Approaching', 'Grade Level', 'Above Grade', 'Advanced'][sub.overallLevel || 1];
+  document.getElementById('modal-submission-content').innerHTML = `
+    <h2 class="modal-title" style="margin-bottom:4px">${sub.studentName}</h2>
+    <p class="modal-sub">Grade ${sub.grade}${sub.period ? ' · ' + sub.period : ''} · ${new Date(sub.date).toLocaleString()} · ${sub.wordCount} words</p>
+    <div style="background:var(--cream);border-radius:10px;padding:16px;margin-bottom:20px;font-size:0.9rem;line-height:1.7;max-height:200px;overflow-y:auto;color:var(--navy)">${sub.content}</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      <div style="text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--amber-dark)">${sub.overallScore}</div>
+        <div style="font-size:0.75rem;color:#6B8299;text-transform:uppercase;letter-spacing:0.06em">Score · Level ${sub.overallLevel} · ${levelLabel}</div>
+      </div>
+      <div style="flex:1">
+        ${Object.entries(sub.scores || {}).map(([sk, score]) => `
+        <div class="skill-row" style="margin-bottom:8px">
+          <span class="skill-name" style="font-size:0.78rem">${SKILL_LABELS[sk]}</span>
+          <div class="skill-track"><div class="skill-fill" style="width:${score}%;background:${SKILL_COLORS[sk]}"></div></div>
+          <span class="skill-score">${score}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    ${sub.feedback_summary ? `<div class="ap-summary">${sub.feedback_summary}</div>` : ''}
+    ${sub.next_steps ? `<div class="next-steps-box" style="margin-top:12px">🎯 <strong>Next Step:</strong> ${sub.next_steps}</div>` : ''}`;
+  openModal('modal-submission');
+}
+
+function copyStudentLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied! Share with students.'));
+}
+
+function exportCSV() {
+  const t = STATE.teacher;
+  const mySubs = t?.code
+    ? STATE.submissions.filter(s => s.promptCode === t.code)
+    : STATE.submissions;
+  if (!mySubs.length) return showToast('No submissions to export.', true);
+
+  const headers = ['Student','Grade','Period','Assignment','Date','Word Count','Overall Score','Overall Level','Organization','Evidence','Grammar','Sentence Variety','Vocabulary','Argument Strength','Feedback Summary'];
+  const rows = mySubs.map(s => [
+    s.studentName, s.grade, s.period || '', s.assignmentTitle || 'Free Write',
+    new Date(s.date).toLocaleDateString(), s.wordCount, s.overallScore, s.overallLevel,
+    s.scores?.organization || '', s.scores?.evidence || '', s.scores?.grammar || '',
+    s.scores?.sentence_variety || '', s.scores?.vocabulary || '', s.scores?.argument_strength || '',
+    `"${(s.feedback_summary || '').replace(/"/g, "'")}"`
+  ]);
+
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `writelift_${t.className?.replace(/\s+/g,'_') || 'class'}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV exported!');
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function showLoading(text = 'Loading…') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading').classList.remove('hidden');
+}
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.add('hidden'), 5000);
+}
+
+// Init: if teacher already configured, offer quick login
+window.addEventListener('DOMContentLoaded', () => {
+  if (STATE.teacher) {
+    document.getElementById('t-email').value = STATE.teacher.email || 'kwiatekjo@lynnschools.org';
+    document.getElementById('t-class').value = STATE.teacher.className || '';
+    document.getElementById('t-grade').value = STATE.teacher.grade || 7;
+    document.getElementById('t-prompt').value = STATE.teacher.prompt || '';
+    document.getElementById('t-code').value = STATE.teacher.code || '';
+    document.getElementById('t-apikey').value = STATE.teacher.apiKey || '';
+    document.getElementById('t-emailjs-public').value = STATE.teacher.emailjsPublic || '';
+    document.getElementById('t-emailjs-service').value = STATE.teacher.emailjsService || '';
+    document.getElementById('t-emailjs-template').value = STATE.teacher.emailjsTemplate || '';
+  }
+});
+</script>
+</body>
+</html>
